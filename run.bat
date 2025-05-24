@@ -1,0 +1,9 @@
+@echo off
+echo Iniciando Sistema de Gestion de Estudiantes...
+echo.
+echo Instalando dependencias...
+pip install flask flask-cors
+echo.
+echo Ejecutando aplicacion...
+python app.py
+pause

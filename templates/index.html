@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Estudiantes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header moderno -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>EduManager</span>
+            </div>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="total-estudiantes">0</span>
+                    <span class="stat-label">Estudiantes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="promedio-general">0.0</span>
+                    <span class="stat-label">Promedio</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegación lateral -->
+    <nav class="sidebar">
+        <div class="sidebar-content">
+            <div class="nav-item active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-section="estudiantes">
+                <i class="fas fa-users"></i>
+                <span>Estudiantes</span>
+            </div>
+            <div class="nav-item" data-section="buscar">
+                <i class="fas fa-search"></i>
+                <span>Buscar</span>
+            </div>
+            <div class="nav-item" data-section="agregar">
+                <i class="fas fa-user-plus"></i>
+                <span>Agregar</span>
+            </div>
+            <div class="nav-item" data-section="destacados">
+                <i class="fas fa-star"></i>
+                <span>Destacados</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <button class="btn btn-primary" onclick="generarDatos()">
+                    <i class="fas fa-plus"></i>
+                    Generar Datos
+                </button>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="card gradient-blue">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="total-card">0</h3>
+                            <p>Total Estudiantes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card gradient-green">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="destacados-card">0</h3>
+                            <p>Estudiantes Destacados</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card gradient-purple">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="promedio-card">0.0</h3>
+                            <p>Promedio General</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card gradient-orange">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="materias-card">12</h3>
+                            <p>Materias Disponibles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Estudiantes Section -->
+        <section id="estudiantes" class="content-section">
+            <div class="section-header">
+                <h1>Lista de Estudiantes</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="cargarEstudiantes()">
+                        <i class="fas fa-refresh"></i>
+                        Actualizar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Carné</th>
+                            <th>Promedio</th>
+                            <th>Materias</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="estudiantes-table">
+                        <!-- Los estudiantes se cargan aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Buscar Section -->
+        <section id="buscar" class="content-section">
+            <div class="section-header">
+                <h1>Buscar Estudiantes</h1>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Buscar por nombre o carné..." onkeyup="buscarEstudiante()">
+                </div>
+            </div>
+            
+            <div id="search-results" class="results-container">
+                <!-- Resultados de búsqueda aparecen aquí -->
+            </div>
+        </section>
+
+        <!-- Agregar Section -->
+        <section id="agregar" class="content-section">
+            <div class="section-header">
+                <h1>Agregar Estudiante</h1>
+            </div>
+            
+            <div class="form-container">
+                <form id="student-form" class="modern-form">
+                    <div class="form-group">
+                        <label for="nombre">Nombre Completo</label>
+                        <input type="text" id="nombre" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="carne">Carné</label>
+                        <input type="text" id="carne" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="promedio">Promedio</label>
+                        <input type="number" id="promedio" min="0" max="10" step="0.1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="materias">Materias (separadas por coma)</label>
+                        <textarea id="materias" rows="3" placeholder="Matemáticas, Física, Química..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-plus"></i>
+                        Agregar Estudiante
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Destacados Section -->
+        <section id="destacados" class="content-section">
+            <div class="section-header">
+                <h1>Estudiantes Destacados</h1>
+                <p class="section-subtitle">Estudiantes con promedio mayor a 8.0</p>
+            </div>
+            
+            <div id="destacados-grid" class="students-grid">
+                <!-- Estudiantes destacados aparecen aquí -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para mostrar materias -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Materias del Estudiante</h3>
+                <span class="close" onclick="cerrarModal()">&times;</span>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- Contenido del modal -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificaciones -->
+    <div id="notification" class="notification"></div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

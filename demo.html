@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Estudiantes - Demo</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variables CSS para temas consistentes */
+        :root {
+            --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-color: #f093fb;
+            --accent-color: #4facfe;
+            --success-color: #00d4aa;
+            --warning-color: #ffeaa7;
+            --danger-color: #fd79a8;
+            --dark-color: #2d3748;
+            --light-color: #f7fafc;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Reset y base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header moderno */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        /* Sidebar navegación */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 80px;
+            width: 280px;
+            height: calc(100vh - 80px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 0;
+            z-index: 999;
+        }
+
+        .sidebar-content {
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+            width: 24px;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 80px;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Dashboard grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .gradient-blue::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-green::before { background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%); }
+        .gradient-purple::before { background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); }
+        .gradient-orange::before { background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%); }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .card-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-info p {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Botones modernos */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Grid de estudiantes destacados */
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .student-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .student-name {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .student-grade {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .student-id {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .header-stats {
+                display: none;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header moderno -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>EduManager</span>
+            </div>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <span class="stat-number">30</span>
+                    <span class="stat-label">Estudiantes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">8.2</span>
+                    <span class="stat-label">Promedio</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegación lateral -->
+    <nav class="sidebar">
+        <div class="sidebar-content">
+            <div class="nav-item active">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Estudiantes</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Buscar</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-user-plus"></i>
+                <span>Agregar</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-star"></i>
+                <span>Destacados</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="section-header">
+                <h1>Dashboard</h1>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Generar Datos
+                </button>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="card gradient-blue">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>30</h3>
+                            <p>Total Estudiantes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card gradient-green">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>12</h3>
+                            <p>Estudiantes Destacados</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card gradient-purple">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>8.2</h3>
+                            <p>Promedio General</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card gradient-orange">
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>12</h3>
+                            <p>Materias Disponibles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ejemplo de estudiantes destacados -->
+            <div class="section-header">
+                <h2 style="font-size: 1.75rem; color: var(--dark-color);">Estudiantes Destacados</h2>
+            </div>
+            
+            <div class="students-grid">
+                <div class="student-card">
+                    <div class="student-header">
+                        <div>
+                            <div class="student-name">Ana María López</div>
+                            <div class="student-id">Carné: 24001</div>
+                        </div>
+                        <div class="student-grade">9.2</div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Materias inscritas:</strong> 5
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-book"></i>
+                        Ver Materias
+                    </button>
+                </div>
+
+                <div class="student-card">
+                    <div class="student-header">
+                        <div>
+                            <div class="student-name">Juan Carlos Pérez</div>
+                            <div class="student-id">Carné: 24002</div>
+                        </div>
+                        <div class="student-grade">8.8</div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Materias inscritas:</strong> 4
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-book"></i>
+                        Ver Materias
+                    </button>
+                </div>
+
+                <div class="student-card">
+                    <div class="student-header">
+                        <div>
+                            <div class="student-name">María José Ramírez</div>
+                            <div class="student-id">Carné: 24003</div>
+                        </div>
+                        <div class="student-grade">9.5</div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Materias inscritas:</strong> 6
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-book"></i>
+                        Ver Materias
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
