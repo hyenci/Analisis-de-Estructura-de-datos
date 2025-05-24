@@ -75,20 +75,20 @@ async function cargarDashboard() {
         const response = await fetch(`${API_BASE}/estudiantes`);
         const data = await response.json();
         
-        const statsResponse = await fetch(`${API_BASE}/estadisticas`);
-        const statsData = await statsResponse.json();
+        const promedioResponse = await fetch(`${API_BASE}/promedio-grupo`);
+        const promedioData = await promedioResponse.json();
         
         const destacadosResponse = await fetch(`${API_BASE}/destacados`);
         const destacadosData = await destacadosResponse.json();
         
         // Actualizar estadísticas del header
         document.getElementById('total-estudiantes').textContent = data.total;
-        document.getElementById('promedio-general').textContent = statsData.promedio_general || '0.0';
+        document.getElementById('promedio-general').textContent = promedioData.promedio;
         
         // Actualizar cards del dashboard
         document.getElementById('total-card').textContent = data.total;
         document.getElementById('destacados-card').textContent = destacadosData.estudiantes.length;
-        document.getElementById('promedio-card').textContent = statsData.promedio_general || '0.0';
+        document.getElementById('promedio-card').textContent = promedioData.promedio;
         
         app.estudiantes = data.estudiantes;
         
